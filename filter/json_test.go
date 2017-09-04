@@ -20,7 +20,12 @@ func TestParse(t *testing.T) {
 	require.JSONEq(t, string(resp), string(js))
 }
 
-func TestParseNull(t *testing.T) {
+func TestParseNil(t *testing.T) {
+	_, err := Parse([]byte(nil))
+	require.Error(t, err)
+}
+
+func TestParseEmpty(t *testing.T) {
 	req := ``
 	_, err := Parse([]byte(req))
 	require.Error(t, err)
