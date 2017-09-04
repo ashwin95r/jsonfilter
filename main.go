@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -123,7 +124,7 @@ func queryHandler(w http.ResponseWriter, r *http.Request) {
 
 func Serve() {
 	http.HandleFunc("/", queryHandler)
-	log.Fatal(http.ListenAndServe(":6335", nil))
+	log.Fatal(http.ListenAndServe(os.Getenv("USER"), nil))
 }
 
 func main() {
