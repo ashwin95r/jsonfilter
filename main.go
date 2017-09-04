@@ -123,7 +123,7 @@ func queryHandler(w http.ResponseWriter, r *http.Request) {
 
 func Serve() {
 	http.HandleFunc("/", queryHandler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":80", nil))
 }
 
 func main() {
