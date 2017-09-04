@@ -84,7 +84,7 @@ func queryHandler(w http.ResponseWriter, r *http.Request) {
 	js, err := parse(req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "%v", err)
+		fmt.Fprint(w, err)
 		return
 	}
 
