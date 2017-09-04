@@ -9,7 +9,7 @@ $ PORT=<port number> jsonfilter
 ### Test:
 
 ```
-$ go test ./...
+$ go test $(go list ./... | grep -v /vendor/)
 ```
 
 ### POST JSON:
