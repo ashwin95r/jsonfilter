@@ -2,37 +2,43 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/ashwin95r/jsonfilter/filter"
 )
+
+func writeError(w http.ResponseWriter, err error) {
+	w.WriteHeader(http.StatusBadRequest)
+	mp := map[string]string{
+		"error": err.Error(),
+	}
+	js, _ := json.Marshal(mp)
+	fmt.Fprint(w, string(js))
+}
 
 func queryHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
 	if r.Method != "POST" {
 		// Only accept POST.
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "Invalid method")
+		writeError(w, errors.New("Invalid method"))
 		return
 	}
 
 	req, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "%v", err)
+		writeError(w, err)
 		return
 	}
 
-	js, err := parse(req)
+	js, err := filter.Parse(req)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		mp := map[string]string{
-			"error": err.Error(),
-		}
-		js, _ := json.Marshal(mp)
-		fmt.Fprint(w, string(js))
+		writeError(w, err)
 		return
 	}
 

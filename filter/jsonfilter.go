@@ -1,4 +1,4 @@
-package main
+package filter
 
 import (
 	"encoding/json"
@@ -33,7 +33,7 @@ type Response struct {
 	Title    string `json:"title"`
 }
 
-func parse(payload []byte) ([]byte, error) {
+func Parse(payload []byte) ([]byte, error) {
 	var req Request
 	err := json.Unmarshal(payload, &req)
 	if err != nil {
