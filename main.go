@@ -42,7 +42,9 @@ func queryHandler(w http.ResponseWriter, r *http.Request) {
 
 func Serve() {
 	http.HandleFunc("/", queryHandler)
-	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), nil))
+	port := fmt.Sprintf(":%s", os.Getenv("PORT"))
+	log.Println("Listening on port ", port)
+	log.Fatal(http.ListenAndServe(port, nil))
 }
 
 func main() {
