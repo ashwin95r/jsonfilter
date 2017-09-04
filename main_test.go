@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"testing"
 
@@ -12,7 +11,6 @@ func TestParse(t *testing.T) {
 	f, err := ioutil.ReadFile("input.json")
 	require.NoError(t, err)
 
-	fmt.Println(f)
 	js, err := parse(f)
 	require.NoError(t, err)
 
@@ -20,4 +18,22 @@ func TestParse(t *testing.T) {
 	require.NoError(t, err)
 
 	require.JSONEq(t, string(resp), string(js))
+}
+
+func TestParseNull(t *testing.T) {
+	req := ``
+	_, err := parse([]byte(req))
+	require.Error(t, err)
+}
+
+func TestParseInvalid(t *testing.T) {
+	req := `{asdasd}`
+	_, err := parse([]byte(req))
+	require.Error(t, err)
+}
+
+func TestParseInvalid1(t *testing.T) {
+	req := `{{{}}`
+	_, err := parse([]byte(req))
+	require.Error(t, err)
 }
