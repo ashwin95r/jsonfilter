@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -14,6 +14,10 @@ import (
 var (
 	ERR_INVALID = errors.New("Could not decode request")
 )
+
+type Request struct {
+	Payload []Message `json:"payload"`
+}
 
 type Image struct {
 	ShowImage string `json:"showImage"`
@@ -33,43 +37,9 @@ type Response struct {
 	Title    string `json:"title"`
 }
 
-func findFeatureArray(dec *json.Decoder) error {
-	for {
-		t, err := dec.Token()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return ERR_INVALID
-		}
-		if s, ok := t.(string); ok && s == "payload" && dec.More() {
-			//	fmt.Println(s)
-			// we found the payload element
-			d, err := dec.Token()
-			if err != nil {
-				return ERR_INVALID
-			}
-			if delim, ok := d.(json.Delim); ok {
-				if delim.String() == "[" {
-					// we have our start of the array
-					break
-				} else {
-					// A different kind of delimiter
-					return fmt.Errorf("Expected features to be an array.")
-				}
-			}
-		}
-	}
-
-	if !dec.More() {
-		return ERR_INVALID // fmt.Errorf("Cannot find any features.")
-	}
-	return nil
-}
-
-func parse(payload io.Reader) ([]byte, error) {
-	dec := json.NewDecoder(payload)
-	err := findFeatureArray(dec)
+func parse(payload []byte) ([]byte, error) {
+	var req Request
+	err := json.Unmarshal(payload, &req)
 	if err != nil {
 		return nil, ERR_INVALID
 	}
@@ -77,13 +47,7 @@ func parse(payload io.Reader) ([]byte, error) {
 	respMap := make(map[string]interface{})
 	var respList []Response
 
-	for dec.More() {
-		var f Message
-		err = dec.Decode(&f)
-		if err != nil {
-			return nil, ERR_INVALID
-		}
-
+	for _, f := range req.Payload {
 		if f.Drm && f.EpisodeCount > 0 && f.ImageData != nil && f.ImageData.ShowImage != "" {
 			resp := Response{
 				Title:    strings.Trim(strings.Split(f.Title, "(")[0], " \t\n"),
@@ -111,7 +75,13 @@ func queryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	js, err := parse(r.Body)
+	req, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "%v", err)
+		return
+	}
+	js, err := parse(req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, "%v", err)

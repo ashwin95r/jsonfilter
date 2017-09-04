@@ -1,21 +1,19 @@
 package main
 
 import (
-	"bufio"
+	"fmt"
 	"io/ioutil"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestParse(t *testing.T) {
-	f, err := os.Open("input.json")
+	f, err := ioutil.ReadFile("input.json")
 	require.NoError(t, err)
-	defer f.Close()
 
-	p := bufio.NewReader(f)
-	js, err := parse(p)
+	fmt.Println(f)
+	js, err := parse(f)
 	require.NoError(t, err)
 
 	resp, err := ioutil.ReadFile("output.json")
