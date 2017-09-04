@@ -11,7 +11,7 @@ func TestParse(t *testing.T) {
 	f, err := ioutil.ReadFile("input.json")
 	require.NoError(t, err)
 
-	js, err := parse(f)
+	js, err := Parse(f)
 	require.NoError(t, err)
 
 	resp, err := ioutil.ReadFile("output.json")
@@ -22,18 +22,18 @@ func TestParse(t *testing.T) {
 
 func TestParseNull(t *testing.T) {
 	req := ``
-	_, err := parse([]byte(req))
+	_, err := Parse([]byte(req))
 	require.Error(t, err)
 }
 
 func TestParseInvalid(t *testing.T) {
 	req := `{asdasd}`
-	_, err := parse([]byte(req))
+	_, err := Parse([]byte(req))
 	require.Error(t, err)
 }
 
 func TestParseInvalid1(t *testing.T) {
 	req := `{{{}}`
-	_, err := parse([]byte(req))
+	_, err := Parse([]byte(req))
 	require.Error(t, err)
 }
