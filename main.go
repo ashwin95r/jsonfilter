@@ -84,7 +84,11 @@ func queryHandler(w http.ResponseWriter, r *http.Request) {
 	js, err := parse(req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err)
+		mp := map[string]string{
+			"error": err.Error(),
+		}
+		js, _ := json.Marshal(mp)
+		fmt.Fprint(w, string(js))
 		return
 	}
 
