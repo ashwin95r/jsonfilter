@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 )
 
 var (
@@ -50,7 +49,7 @@ func parse(payload []byte) ([]byte, error) {
 	for _, f := range req.Payload {
 		if f.Drm && f.EpisodeCount > 0 && f.ImageData != nil && f.ImageData.ShowImage != "" {
 			resp := Response{
-				Title:    strings.Trim(strings.Split(f.Title, "(")[0], " \t\n"),
+				Title:    f.Title,
 				ImageURL: f.ImageData.ShowImage,
 				Slug:     f.Slug,
 			}
