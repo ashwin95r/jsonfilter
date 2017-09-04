@@ -8,8 +8,6 @@ import (
 	"log"
 	"net/http"
 	"strings"
-
-	"github.com/dgraph-io/dgraph/x"
 )
 
 var (
@@ -108,7 +106,7 @@ func queryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.Method != "POST" {
 		w.WriteHeader(http.StatusBadRequest)
-		x.SetStatus(w, x.ErrorInvalidMethod, "Invalid method")
+		fmt.Fprint(w, "Invalid method")
 		return
 	}
 
